@@ -9,7 +9,7 @@
       "JG.WebKit.Router.Tests/1.0.0": {
         "dependencies": {
           "FluentAssertions": "6.12.0",
-          "JG.WebKit.Router": "1.0.0",
+          "JG.WebKit.Router": "1.0.1",
           "Microsoft.AspNetCore.TestHost": "8.0.4",
           "Microsoft.NET.Test.Sdk": "17.10.0",
           "Moq": "4.20.70",
@@ -399,11 +399,11 @@
           }
         }
       },
-      "JG.WebKit.Router/1.0.0": {
+      "JG.WebKit.Router/1.0.1": {
         "runtime": {
           "JG.WebKit.Router.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
+            "assemblyVersion": "1.0.1.0",
+            "fileVersion": "1.0.1.0"
           }
         }
       }
@@ -534,7 +534,7 @@
       "path": "xunit.extensibility.execution/2.7.0",
       "hashPath": "xunit.extensibility.execution.2.7.0.nupkg.sha512"
     },
-    "JG.WebKit.Router/1.0.0": {
+    "JG.WebKit.Router/1.0.1": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

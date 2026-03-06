@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/jamesgober/dotnet-webkit-router</projectUrl>
     <description>Trie-based HTTP router for ASP.NET Core. Compiled per-route execution chains, static/dynamic/hybrid routing, hot-reload, and built-in parameter constraints.</description>
     <tags>router trie aspnet-core routing web-framework dotnet</tags>
-    <repository type="git" url="https://github.com/jamesgober/dotnet-webkit-router" commit="4857f9e29820dd319e8f03350d1585f3ad0c2883" />
+    <repository type="git" url="https://github.com/jamesgober/dotnet-webkit-router" commit="28693c516023335e020ea311b641cf43df114157" />
     <dependencies>
       <group targetFramework="net8.0" />
     </dependencies>

@@ -546,7 +546,7 @@
           "build/net6.0/xunit.runner.visualstudio.props": {}
         }
       },
-      "JG.WebKit.Router/1.0.0": {
+      "JG.WebKit.Router/1.0.1": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
         "compile": {
@@ -1228,7 +1228,7 @@
         "xunit.runner.visualstudio.nuspec"
       ]
     },
-    "JG.WebKit.Router/1.0.0": {
+    "JG.WebKit.Router/1.0.1": {
       "type": "project",
       "path": "../../src/JG.WebKit.Router/JG.WebKit.Router.csproj",
       "msbuildProject": "../../src/JG.WebKit.Router/JG.WebKit.Router.csproj"
@@ -1237,7 +1237,7 @@
   "projectFileDependencyGroups": {
     "net8.0": [
       "FluentAssertions >= 6.12.0",
-      "JG.WebKit.Router >= 1.0.0",
+      "JG.WebKit.Router >= 1.0.1",
       "Microsoft.AspNetCore.TestHost >= 8.0.4",
       "Microsoft.NET.Test.Sdk >= 17.10.0",
       "Moq >= 4.20.70",

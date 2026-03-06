@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("JG.WebKit.Router.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4857f9e29820dd319e8f03350d1585f3ad0c2883")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+28693c516023335e020ea311b641cf43df114157")]
 [assembly: System.Reflection.AssemblyProductAttribute("JG.WebKit.Router.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("JG.WebKit.Router.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

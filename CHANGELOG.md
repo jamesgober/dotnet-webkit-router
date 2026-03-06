@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - _No changes yet._
 
+## [1.0.1] - 2026-03-05
+
+### Fixed
+
+- NuGet package release fix (version bump for clean release)
+
 ## [1.0.0] - 2026-03-05
 
 ### Added
@@ -41,4 +47,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Deterministic builds with SourceLink enabled
 - Portable PDB symbols included
 
+[1.0.1]: https://github.com/jamesgober/dotnet-webkit-router/releases/tag/v1.0.1
 [1.0.0]: https://github.com/jamesgober/dotnet-webkit-router/releases/tag/v1.0.0

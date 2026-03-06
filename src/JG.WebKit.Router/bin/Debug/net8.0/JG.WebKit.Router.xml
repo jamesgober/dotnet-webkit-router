@@ -226,17 +226,17 @@
         </member>
         <member name="T:JG.WebKit.Router.Extensions.ApplicationBuilderExtensions">
             <summary>
-            Application builder extensions for registering the WebKit router middleware.
+            Extension methods for registering the WebKit router middleware.
             </summary>
         </member>
         <member name="M:JG.WebKit.Router.Extensions.ApplicationBuilderExtensions.UseWebKitRouter(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
             <summary>
-            Use the WebKit router middleware. Must be called after registering services with AddWebKitRouter().
+            Use the WebKit router middleware.
             </summary>
         </member>
         <member name="T:JG.WebKit.Router.Extensions.RouteMappingExtensions">
             <summary>
-            Fluent route mapping API for registering routes.
+            Extension methods for mapping routes fluently.
             </summary>
         </member>
         <member name="M:JG.WebKit.Router.Extensions.RouteMappingExtensions.MapRoute(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.String,JG.WebKit.Router.RouteHandler)">
@@ -256,7 +256,7 @@
         </member>
         <member name="M:JG.WebKit.Router.Extensions.RouteMappingBuilder.#ctor(JG.WebKit.Router.RouteDefinition)">
             <summary>
-            Creates a new RouteMappingBuilder for the specified route definition.
+            Initializes a new RouteMappingBuilder.
             </summary>
         </member>
         <member name="M:JG.WebKit.Router.Extensions.RouteMappingBuilder.AddChainNode(JG.WebKit.Router.Abstractions.IChainNode)">
@@ -264,9 +264,19 @@
             Add a chain node to this route.
             </summary>
         </member>
+        <member name="M:JG.WebKit.Router.Extensions.RouteMappingBuilder.AddChainNode``1">
+            <summary>
+            Add a chain node of type T to this route.
+            </summary>
+        </member>
         <member name="M:JG.WebKit.Router.Extensions.RouteMappingBuilder.AddWrapper(JG.WebKit.Router.Abstractions.IRouteWrapper)">
             <summary>
             Add a wrapper to this route.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Extensions.RouteMappingBuilder.AddWrapper``1">
+            <summary>
+            Add a wrapper of type T to this route.
             </summary>
         </member>
         <member name="M:JG.WebKit.Router.Extensions.RouteMappingBuilder.WithMetadata(System.String,System.Object)">
@@ -276,12 +286,12 @@
         </member>
         <member name="M:JG.WebKit.Router.Extensions.RouteMappingBuilder.RequireAuth">
             <summary>
-            Add a chain node of type T.
+            Mark this route as requiring authentication.
             </summary>
         </member>
         <member name="M:JG.WebKit.Router.Extensions.RouteMappingBuilder.RequireRateLimit">
             <summary>
-            Add rate limiting to this route.
+            Mark this route as requiring rate limiting.
             </summary>
         </member>
         <member name="T:JG.WebKit.Router.Extensions.RouteGroupBuilder">
@@ -291,7 +301,7 @@
         </member>
         <member name="M:JG.WebKit.Router.Extensions.RouteGroupBuilder.#ctor(System.String,JG.WebKit.Router.Providers.StaticRouteProvider)">
             <summary>
-            Creates a new RouteGroupBuilder for the specified prefix and static route provider.
+            Initializes a new RouteGroupBuilder.
             </summary>
         </member>
         <member name="M:JG.WebKit.Router.Extensions.RouteGroupBuilder.AddChainNode(JG.WebKit.Router.Abstractions.IChainNode)">
@@ -326,7 +336,12 @@
         </member>
         <member name="M:JG.WebKit.Router.Extensions.WebKitRouterServiceCollectionExtensions.AddRouteConstraint``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.String)">
             <summary>
-            Register a custom route constraint.
+            Register a custom route constraint. Call this before AddWebKitRouter.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Internal.RouterLogMessages">
+            <summary>
+            Source-generated logging messages for the WebKit router.
             </summary>
         </member>
         <member name="T:JG.WebKit.Router.Internal.SegmentParser">
@@ -382,7 +397,7 @@
         <member name="P:JG.WebKit.Router.Internal.TrieNode.ConstrainedParams">
             <summary>
             Constrained parameter children.
-            Key: parameter name with constraint (e.g., "id:int").
+            (ParamName with constraint key, Constraint key, Actual param name, TrieNode)
             </summary>
         </member>
         <member name="P:JG.WebKit.Router.Internal.TrieNode.UnconstrainedParam">
@@ -430,7 +445,7 @@
         </member>
         <member name="M:JG.WebKit.Router.Internal.UrlNormalizer.SplitPathSegments(System.ReadOnlySpan{System.Char})">
             <summary>
-            Split a path into segments using ReadOnlySpan (no allocation).
+            Split a path into segments using ReadOnlySpan (minimal allocation).
             Empty segments are skipped.
             </summary>
         </member>

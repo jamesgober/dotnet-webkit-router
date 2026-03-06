@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>JG.WebKit.Router</id>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <authors>James Gober</authors>
     <license type="expression">Apache-2.0</license>
     <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
@@ -21,6 +21,8 @@
     </frameworkReferences>
   </metadata>
   <files>
-    <file src="C:\Dev\libs\dotnet\dotnet-webkit-router\src\JG.WebKit.Router\bin\Release\net8.0\JG.WebKit.Router.pdb" target="lib\net8.0\JG.WebKit.Router.pdb" />
+    <file src="C:\Dev\libs\dotnet\dotnet-webkit-router\src\JG.WebKit.Router\bin\Release\net8.0\JG.WebKit.Router.dll" target="lib\net8.0\JG.WebKit.Router.dll" />
+    <file src="C:\Dev\libs\dotnet\dotnet-webkit-router\src\JG.WebKit.Router\bin\Release\net8.0\JG.WebKit.Router.xml" target="lib\net8.0\JG.WebKit.Router.xml" />
+    <file src="C:\Dev\libs\dotnet\dotnet-webkit-router\README.md" target="\README.md" />
   </files>
 </package>
