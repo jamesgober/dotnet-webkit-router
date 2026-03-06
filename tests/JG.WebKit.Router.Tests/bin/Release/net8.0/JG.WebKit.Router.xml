@@ -1,0 +1,761 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>JG.WebKit.Router</name>
+    </assembly>
+    <members>
+        <member name="T:JG.WebKit.Router.Abstractions.IChainNode">
+            <summary>
+            Executes a single step in a route's execution chain.
+            Returns either Continue (to execute next node) or Stop (to short-circuit).
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Abstractions.IChainNode.ExecuteAsync(JG.WebKit.Router.RequestContext,System.Threading.CancellationToken)">
+            <summary>
+            Execute this chain node. Return ChainResult.Next() to continue, or ChainResult.Stop(response) to short-circuit.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Abstractions.IRouteConstraint">
+            <summary>
+            Custom constraint for validating route parameters.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Abstractions.IRouteConstraint.Match(System.String,System.ReadOnlySpan{System.Char})">
+            <summary>
+            Validate the parameter value. Return true if it matches the constraint, false otherwise.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Abstractions.IRouteProvider">
+            <summary>
+            Provides route definitions from any source (code, database, config, etc.).
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Abstractions.IRouteProvider.GetRoutesAsync(System.Threading.CancellationToken)">
+            <summary>
+            Return all routes from this provider. Called during router initialization and reload.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Abstractions.IRouter">
+            <summary>
+            The main router interface. Matches requests to routes and executes them.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Abstractions.IRouter.HandleRequestAsync(Microsoft.AspNetCore.Http.HttpContext,System.Threading.CancellationToken)">
+            <summary>
+            Handle an HTTP request and return a RouteResult.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Abstractions.IRouter.ReloadAsync(System.Threading.CancellationToken)">
+            <summary>
+            Reload routes from all providers. Atomic trie swap, zero downtime.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Abstractions.IRouter.RegisterRouteAsync(JG.WebKit.Router.RouteDefinition,System.Threading.CancellationToken)">
+            <summary>
+            Register a single route (primarily for testing).
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Abstractions.IRouteWrapper">
+            <summary>
+            Wraps route execution with before/after hooks. Used sparingly for use cases
+            that genuinely need both before and after logic (timing, error handling, etc.).
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Abstractions.IRouteWrapper.WrapAsync(JG.WebKit.Router.RequestContext,System.Func{System.Threading.Tasks.ValueTask{JG.WebKit.Router.RouteResult}},System.Threading.CancellationToken)">
+            <summary>
+            Wraps the route execution. The <paramref name="nextHandler"/> function executes the actual route.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.ChainResult">
+            <summary>
+            Result of a chain node execution. Either continue to the next node, or short-circuit with a response.
+            Immutable readonly struct.
+            </summary>
+        </member>
+        <member name="P:JG.WebKit.Router.ChainResult.Continue">
+            <summary>
+            If true, execution continues to the next chain node or handler.
+            If false, execution short-circuits and the response is returned.
+            </summary>
+        </member>
+        <member name="P:JG.WebKit.Router.ChainResult.Response">
+            <summary>
+            The response to return if Continue is false. Null if Continue is true.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.ChainResult.Next">
+            <summary>
+            Creates a result that continues to the next node.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.ChainResult.Stop(JG.WebKit.Router.RouteResult)">
+            <summary>
+            Creates a result that short-circuits with the specified response.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Constraints.IntConstraint">
+            <summary>
+            Validates that a parameter value is a valid 32-bit integer.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Constraints.IntConstraint.Match(System.String,System.ReadOnlySpan{System.Char})">
+            <summary>
+            Validates that the value can be parsed as an integer.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Constraints.LongConstraint">
+            <summary>
+            Validates that a parameter value is a valid 64-bit integer.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Constraints.LongConstraint.Match(System.String,System.ReadOnlySpan{System.Char})">
+            <summary>
+            Validates that the value can be parsed as a long.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Constraints.GuidConstraint">
+            <summary>
+            Validates that a parameter value is a valid GUID.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Constraints.GuidConstraint.Match(System.String,System.ReadOnlySpan{System.Char})">
+            <summary>
+            Validates that the value can be parsed as a GUID.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Constraints.BoolConstraint">
+            <summary>
+            Validates that a parameter value is a valid boolean (true/false).
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Constraints.BoolConstraint.Match(System.String,System.ReadOnlySpan{System.Char})">
+            <summary>
+            Validates that the value can be parsed as a boolean.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Constraints.SlugConstraint">
+            <summary>
+            Validates that a parameter value is URL-friendly: lowercase letters, numbers, and hyphens only.
+            No regex — implemented as a Span loop.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Constraints.SlugConstraint.Match(System.String,System.ReadOnlySpan{System.Char})">
+            <summary>
+            Validates that the value is a valid slug (lowercase letters, numbers, hyphens only).
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Constraints.AlphaConstraint">
+            <summary>
+            Validates that a parameter value contains letters only (a-z, A-Z).
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Constraints.AlphaConstraint.Match(System.String,System.ReadOnlySpan{System.Char})">
+            <summary>
+            Validates that the value contains only letters.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Constraints.AlphanumConstraint">
+            <summary>
+            Validates that a parameter value contains letters and numbers only.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Constraints.AlphanumConstraint.Match(System.String,System.ReadOnlySpan{System.Char})">
+            <summary>
+            Validates that the value contains only letters and numbers.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Constraints.FilenameConstraint">
+            <summary>
+            Validates that a parameter value is a URL-safe filename.
+            Allows letters, numbers, hyphens, underscores, and dots.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Constraints.FilenameConstraint.Match(System.String,System.ReadOnlySpan{System.Char})">
+            <summary>
+            Validates that the value is a valid filename (no leading/trailing dots, safe characters only).
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Constraints.LengthConstraint">
+            <summary>
+            Validates that a parameter value string length is within the specified range (inclusive).
+            Usage: {name:length(2,50)}
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Constraints.LengthConstraint.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Creates a length constraint with the specified minimum and maximum string lengths (inclusive).
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Constraints.LengthConstraint.Match(System.String,System.ReadOnlySpan{System.Char})">
+            <summary>
+            Validates that the value string length is within the specified range.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Constraints.RangeConstraint">
+            <summary>
+            Validates that a parameter value is an integer within a specified range (inclusive).
+            Usage: {page:range(1,100)}
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Constraints.RangeConstraint.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Creates a range constraint with the specified minimum and maximum values (inclusive).
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Constraints.RangeConstraint.Match(System.String,System.ReadOnlySpan{System.Char})">
+            <summary>
+            Validates that the value is an integer within the specified range.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Constraints.RegexConstraint">
+            <summary>
+            Validates a parameter value against a regex pattern.
+            Pattern is compiled once at registration and cached for performance.
+            Usage: {code:regex(^[A-Z]{3}\\d{3}$)}
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Constraints.RegexConstraint.#ctor(System.String)">
+            <summary>
+            Creates a regex constraint with the specified pattern. Pattern is compiled and cached.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Constraints.RegexConstraint.Match(System.String,System.ReadOnlySpan{System.Char})">
+            <summary>
+            Validates that the value matches the regex pattern.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Extensions.ApplicationBuilderExtensions">
+            <summary>
+            Extension methods for registering the WebKit router middleware.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Extensions.ApplicationBuilderExtensions.UseWebKitRouter(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Use the WebKit router middleware.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Extensions.RouteMappingExtensions">
+            <summary>
+            Extension methods for mapping routes fluently.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Extensions.RouteMappingExtensions.MapRoute(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.String,JG.WebKit.Router.RouteHandler)">
+            <summary>
+            Register a route with the static route provider.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Extensions.RouteMappingExtensions.MapRouteGroup(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.String,System.Action{JG.WebKit.Router.Extensions.RouteGroupBuilder})">
+            <summary>
+            Register a route group with shared prefix and chain nodes.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Extensions.RouteMappingBuilder">
+            <summary>
+            Fluent builder for configuring individual routes.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Extensions.RouteMappingBuilder.#ctor(JG.WebKit.Router.RouteDefinition)">
+            <summary>
+            Initializes a new RouteMappingBuilder.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Extensions.RouteMappingBuilder.AddChainNode(JG.WebKit.Router.Abstractions.IChainNode)">
+            <summary>
+            Add a chain node to this route.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Extensions.RouteMappingBuilder.AddChainNode``1">
+            <summary>
+            Add a chain node of type T to this route.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Extensions.RouteMappingBuilder.AddWrapper(JG.WebKit.Router.Abstractions.IRouteWrapper)">
+            <summary>
+            Add a wrapper to this route.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Extensions.RouteMappingBuilder.AddWrapper``1">
+            <summary>
+            Add a wrapper of type T to this route.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Extensions.RouteMappingBuilder.WithMetadata(System.String,System.Object)">
+            <summary>
+            Add metadata to this route.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Extensions.RouteMappingBuilder.RequireAuth">
+            <summary>
+            Mark this route as requiring authentication.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Extensions.RouteMappingBuilder.RequireRateLimit">
+            <summary>
+            Mark this route as requiring rate limiting.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Extensions.RouteGroupBuilder">
+            <summary>
+            Fluent builder for route groups.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Extensions.RouteGroupBuilder.#ctor(System.String,JG.WebKit.Router.Providers.StaticRouteProvider)">
+            <summary>
+            Initializes a new RouteGroupBuilder.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Extensions.RouteGroupBuilder.AddChainNode(JG.WebKit.Router.Abstractions.IChainNode)">
+            <summary>
+            Add a chain node to all routes in this group.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Extensions.RouteGroupBuilder.AddChainNode``1">
+            <summary>
+            Add a chain node of type T to all routes in this group.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Extensions.RouteGroupBuilder.MapRoute(System.String,System.String,JG.WebKit.Router.RouteHandler)">
+            <summary>
+            Register a route within this group.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Extensions.WebKitRouterServiceCollectionExtensions">
+            <summary>
+            Service collection extension for registering the WebKit router.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Extensions.WebKitRouterServiceCollectionExtensions.AddWebKitRouter(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{JG.WebKit.Router.RouterOptions})">
+            <summary>
+            Register the WebKit router with the dependency injection container.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Extensions.WebKitRouterServiceCollectionExtensions.AddRouteProvider``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Register a route provider.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Extensions.WebKitRouterServiceCollectionExtensions.AddRouteConstraint``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.String)">
+            <summary>
+            Register a custom route constraint. Call this before AddWebKitRouter.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Internal.RouterLogMessages">
+            <summary>
+            Source-generated logging messages for the WebKit router.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Internal.SegmentParser">
+            <summary>
+            Parses a route path segment and extracts parameter name and constraint.
+            Example: "{id:int}" → name="id", constraint="int"
+            Example: "{name}" → name="name", constraint=null (unconstrained)
+            Example: "{**path}" → name="path", constraint="wildcard"
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Internal.SegmentParser.ParsedSegment">
+            <summary>
+            Represents a parsed segment.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Internal.SegmentParser.Parse(System.ReadOnlySpan{System.Char})">
+            <summary>
+            Parses a route segment. Returns a ParsedSegment with name and constraint.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Internal.SegmentParser.IsOptional(System.ReadOnlySpan{System.Char})">
+            <summary>
+            Check if a segment is optional (ends with '?').
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Internal.TrieBuilder">
+            <summary>
+            Builds and manages the route trie.
+            Thread-safe: hot-reload via atomic trie swap with Interlocked.Exchange.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Internal.TrieBuilder.BuildTrie(System.Collections.Generic.IReadOnlyList{JG.WebKit.Router.RouteDefinition})">
+            <summary>
+            Build a trie from a list of route definitions.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Internal.TrieBuilder.Match(JG.WebKit.Router.Internal.TrieNode,System.String,System.Collections.Generic.IReadOnlyList{System.String})">
+            <summary>
+            Match a request against the trie and extract parameters.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Internal.TrieNode">
+            <summary>
+            Immutable trie node for route matching.
+            Each node can have literal, constrained param, unconstrained param, and wildcard children.
+            </summary>
+        </member>
+        <member name="P:JG.WebKit.Router.Internal.TrieNode.Literals">
+            <summary>
+            Literal segment children (exact string match, O(1) lookup).
+            </summary>
+        </member>
+        <member name="P:JG.WebKit.Router.Internal.TrieNode.ConstrainedParams">
+            <summary>
+            Constrained parameter children.
+            (ParamName with constraint key, Constraint key, Actual param name, TrieNode)
+            </summary>
+        </member>
+        <member name="P:JG.WebKit.Router.Internal.TrieNode.UnconstrainedParam">
+            <summary>
+            Unconstrained parameter child (single, first match wins).
+            </summary>
+        </member>
+        <member name="P:JG.WebKit.Router.Internal.TrieNode.Wildcard">
+            <summary>
+            Wildcard/catch-all parameter child (matches remaining segments).
+            </summary>
+        </member>
+        <member name="P:JG.WebKit.Router.Internal.TrieNode.Routes">
+            <summary>
+            Routes registered at this node, keyed by HTTP method.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Internal.CompiledRoute">
+            <summary>
+            Compiled route with pre-built chain nodes and handler.
+            Executed when a route matches.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Internal.CompiledRoute.ExecuteAsync(JG.WebKit.Router.RequestContext,System.Threading.CancellationToken)">
+            <summary>
+            Execute this compiled route with all chain nodes and wrappers.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Internal.TrieMatchResult">
+            <summary>
+            Result of route matching.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Internal.UrlNormalizer">
+            <summary>
+            Handles URL normalization: trailing slash, case sensitivity, and path segment extraction.
+            All operations are allocation-free when feasible.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Internal.UrlNormalizer.NormalizePath(System.String,System.Boolean,System.Boolean)">
+            <summary>
+            Normalize a path: handle trailing slash and case sensitivity.
+            Returns the normalized path.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Internal.UrlNormalizer.SplitPathSegments(System.ReadOnlySpan{System.Char})">
+            <summary>
+            Split a path into segments using ReadOnlySpan (minimal allocation).
+            Empty segments are skipped.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Internal.UrlNormalizer.HasTrailingSlash(System.String)">
+            <summary>
+            Check if a path has a trailing slash.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Internal.UrlNormalizer.ToggleTrailingSlash(System.String)">
+            <summary>
+            Get the URL with trailing slash added or removed.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Internal.UrlNormalizer.DecodeSegment(System.String)">
+            <summary>
+            Decode a URL-encoded path segment.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Internal.UrlNormalizer.EncodeSegment(System.String)">
+            <summary>
+            Encode a path segment for URL usage.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Internal.WebKitRouter">
+            <summary>
+            Main router implementation. Matches requests to routes via trie and executes compiled chains.
+            Hot-reload via atomic trie swap with Interlocked.Exchange.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Internal.WebKitRouter.InitializeAsync(System.Threading.CancellationToken)">
+            <summary>
+            Initialize the router by loading routes from all providers.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Internal.WebKitRouter.HandleRequestAsync(Microsoft.AspNetCore.Http.HttpContext,System.Threading.CancellationToken)">
+            <summary>
+            Handle an HTTP request: normalize URL, match route, execute chain, return result.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Internal.WebKitRouter.ReloadAsync(System.Threading.CancellationToken)">
+            <summary>
+            Reload routes from all providers. Atomic trie swap, zero downtime.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Internal.WebKitRouter.RegisterRouteAsync(JG.WebKit.Router.RouteDefinition,System.Threading.CancellationToken)">
+            <summary>
+            Register a single route for testing.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Internal.WebKitRouter.GetCurrentTrie">
+            <summary>
+            Get the current trie for testing.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Providers.StaticRouteProvider">
+            <summary>
+            Provides routes defined in code via MapRoute() calls.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Providers.StaticRouteProvider.AddRoute(JG.WebKit.Router.RouteDefinition)">
+            <summary>
+            Add a static route.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Providers.StaticRouteProvider.GetRoutesAsync(System.Threading.CancellationToken)">
+            <summary>
+            Returns all routes registered in this provider.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.Providers.ConfigurationRouteProvider">
+            <summary>
+            Provides routes loaded from IConfiguration (appsettings.json).
+            Configuration format:
+            {
+              "Routes": [
+                {
+                  "Method": "GET",
+                  "Path": "/api/users/{id:int}",
+                  "Handler": "UserHandler.GetById"
+                }
+              ]
+            }
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.Providers.ConfigurationRouteProvider.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Creates a new ConfigurationRouteProvider that reads routes from the specified IConfiguration instance.
+            </summary>
+            <param name="configuration">The configuration instance to read routes from.</param>
+        </member>
+        <member name="M:JG.WebKit.Router.Providers.ConfigurationRouteProvider.GetRoutesAsync(System.Threading.CancellationToken)">
+            <summary>
+            Loads and returns all routes from the configuration.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.RequestContext">
+            <summary>
+            Context passed to chain nodes and route handlers during execution.
+            Immutable readonly struct containing the HTTP context and matched route information.
+            </summary>
+        </member>
+        <member name="P:JG.WebKit.Router.RequestContext.HttpContext">
+            <summary>
+            The ASP.NET Core HttpContext for this request.
+            </summary>
+        </member>
+        <member name="P:JG.WebKit.Router.RequestContext.Match">
+            <summary>
+            The matched route information including parameters.
+            </summary>
+        </member>
+        <member name="P:JG.WebKit.Router.RequestContext.RouteMetadata">
+            <summary>
+            Route metadata (e.g., cache_ttl, layout, permissions).
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.RequestContext.#ctor(Microsoft.AspNetCore.Http.HttpContext,JG.WebKit.Router.RouteMatch,System.Collections.Generic.IReadOnlyDictionary{System.String,System.Object})">
+            <summary>
+            Creates a new RequestContext with the specified HttpContext, route match, and metadata.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.RouteDefinition">
+            <summary>
+            Defines a single HTTP route with its method, path, handler, and constraints.
+            </summary>
+        </member>
+        <member name="P:JG.WebKit.Router.RouteDefinition.Method">
+            <summary>
+            HTTP method (GET, POST, PUT, DELETE, etc.).
+            </summary>
+        </member>
+        <member name="P:JG.WebKit.Router.RouteDefinition.Path">
+            <summary>
+            Route path template (e.g., "/api/users/{id:int}").
+            </summary>
+        </member>
+        <member name="P:JG.WebKit.Router.RouteDefinition.Handler">
+            <summary>
+            The handler to execute when this route matches.
+            </summary>
+        </member>
+        <member name="P:JG.WebKit.Router.RouteDefinition.Metadata">
+            <summary>
+            Optional route metadata (e.g., cache_ttl, layout, permissions).
+            </summary>
+        </member>
+        <member name="P:JG.WebKit.Router.RouteDefinition.ChainNodes">
+            <summary>
+            Optional chain nodes to execute before the handler.
+            </summary>
+        </member>
+        <member name="P:JG.WebKit.Router.RouteDefinition.Wrappers">
+            <summary>
+            Optional wrappers that provide before/after execution hooks.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.RouteHandler">
+            <summary>
+            Delegate for executing a route handler and returning a RouteResult.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.RouteMatch">
+            <summary>
+            Represents a matched route with extracted parameters and metadata.
+            </summary>
+        </member>
+        <member name="P:JG.WebKit.Router.RouteMatch.Method">
+            <summary>
+            HTTP method (GET, POST, etc.) that matched.
+            </summary>
+        </member>
+        <member name="P:JG.WebKit.Router.RouteMatch.Path">
+            <summary>
+            Route path template that matched.
+            </summary>
+        </member>
+        <member name="P:JG.WebKit.Router.RouteMatch.Parameters">
+            <summary>
+            Extracted route parameters (e.g., {id} values).
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.RouteMatch.#ctor(System.String,System.String,System.Collections.Generic.IReadOnlyDictionary{System.String,System.String})">
+            <summary>
+            Creates a new RouteMatch with the specified method, path, and parameters.
+            </summary>
+            <param name="method">The HTTP method that matched.</param>
+            <param name="path">The route path template that matched.</param>
+            <param name="parameters">The extracted route parameters.</param>
+        </member>
+        <member name="T:JG.WebKit.Router.RouteResult">
+            <summary>
+            Represents the result of route matching and execution.
+            Immutable, stack-allocated readonly struct with zero GC pressure.
+            </summary>
+        </member>
+        <member name="P:JG.WebKit.Router.RouteResult.StatusCode">
+            <summary>
+            HTTP status code for the response.
+            </summary>
+        </member>
+        <member name="P:JG.WebKit.Router.RouteResult.Body">
+            <summary>
+            Response body. Can be null, string, or any serializable object.
+            </summary>
+        </member>
+        <member name="P:JG.WebKit.Router.RouteResult.IsSuccess">
+            <summary>
+            Indicates whether the response represents a successful HTTP status (2xx).
+            </summary>
+        </member>
+        <member name="P:JG.WebKit.Router.RouteResult.Headers">
+            <summary>
+            Optional HTTP response headers.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.RouteResult.Ok(System.Object)">
+            <summary>
+            Creates a successful 200 OK response.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.RouteResult.Json(System.Object,System.Int32)">
+            <summary>
+            Creates a JSON response with the specified body and status code.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.RouteResult.Html(System.String)">
+            <summary>
+            Creates an HTML response with the specified HTML content.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.RouteResult.Redirect(System.String,System.Int32)">
+            <summary>
+            Creates a redirect response.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.RouteResult.NotFound(System.String)">
+            <summary>
+            Creates a 404 Not Found response.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.RouteResult.Unauthorized(System.String)">
+            <summary>
+            Creates a 401 Unauthorized response.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.RouteResult.Forbidden(System.String)">
+            <summary>
+            Creates a 403 Forbidden response.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.RouteResult.TooManyRequests(System.String)">
+            <summary>
+            Creates a 429 Too Many Requests response.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.RouteResult.BadRequest(System.String)">
+            <summary>
+            Creates a 400 Bad Request response.
+            </summary>
+        </member>
+        <member name="M:JG.WebKit.Router.RouteResult.Error(System.Int32,System.String)">
+            <summary>
+            Creates an error response with the specified status code.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.RouterOptions">
+            <summary>
+            Configuration options for the WebKit router.
+            </summary>
+        </member>
+        <member name="P:JG.WebKit.Router.RouterOptions.EnableTrailingSlashRedirect">
+            <summary>
+            If true, URLs ending with a slash will be redirected to non-slash version (or vice versa).
+            Default: false (silent normalization).
+            </summary>
+        </member>
+        <member name="P:JG.WebKit.Router.RouterOptions.CaseSensitive">
+            <summary>
+            If true, route matching is case-sensitive. Default: false.
+            </summary>
+        </member>
+        <member name="P:JG.WebKit.Router.RouterOptions.ConflictPolicy">
+            <summary>
+            Policy for handling route conflicts (duplicate routes).
+            </summary>
+        </member>
+        <member name="P:JG.WebKit.Router.RouterOptions.RespectProxyHeaders">
+            <summary>
+            If true, proxy headers (X-Forwarded-*) are respected for URL reconstruction.
+            </summary>
+        </member>
+        <member name="P:JG.WebKit.Router.RouterOptions.MaxCompiledRegexCache">
+            <summary>
+            Maximum number of cached regex patterns per constraint type. Default: 100.
+            </summary>
+        </member>
+        <member name="T:JG.WebKit.Router.RouteConflictPolicy">
+            <summary>
+            Policy for handling route conflicts.
+            </summary>
+        </member>
+        <member name="F:JG.WebKit.Router.RouteConflictPolicy.ThrowOnConflict">
+            <summary>
+            Throw an exception when duplicate routes are detected.
+            </summary>
+        </member>
+        <member name="F:JG.WebKit.Router.RouteConflictPolicy.LastWins">
+            <summary>
+            Use the last registered route and silently ignore earlier duplicates.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,14 @@
+C:\Dev\libs\dotnet\dotnet-webkit-router\src\JG.WebKit.Router\bin\Debug\net8.0\JG.WebKit.Router.deps.json
+C:\Dev\libs\dotnet\dotnet-webkit-router\src\JG.WebKit.Router\bin\Debug\net8.0\JG.WebKit.Router.dll
+C:\Dev\libs\dotnet\dotnet-webkit-router\src\JG.WebKit.Router\bin\Debug\net8.0\JG.WebKit.Router.pdb
+C:\Dev\libs\dotnet\dotnet-webkit-router\src\JG.WebKit.Router\bin\Debug\net8.0\JG.WebKit.Router.xml
+C:\Dev\libs\dotnet\dotnet-webkit-router\src\JG.WebKit.Router\obj\Debug\net8.0\JG.WebKit.Router.GeneratedMSBuildEditorConfig.editorconfig
+C:\Dev\libs\dotnet\dotnet-webkit-router\src\JG.WebKit.Router\obj\Debug\net8.0\JG.WebKit.Router.AssemblyInfoInputs.cache
+C:\Dev\libs\dotnet\dotnet-webkit-router\src\JG.WebKit.Router\obj\Debug\net8.0\JG.WebKit.Router.AssemblyInfo.cs
+C:\Dev\libs\dotnet\dotnet-webkit-router\src\JG.WebKit.Router\obj\Debug\net8.0\JG.WebKit.Router.csproj.CoreCompileInputs.cache
+C:\Dev\libs\dotnet\dotnet-webkit-router\src\JG.WebKit.Router\obj\Debug\net8.0\JG.WebKit.Router.sourcelink.json
+C:\Dev\libs\dotnet\dotnet-webkit-router\src\JG.WebKit.Router\obj\Debug\net8.0\JG.WebKit.Router.dll
+C:\Dev\libs\dotnet\dotnet-webkit-router\src\JG.WebKit.Router\obj\Debug\net8.0\refint\JG.WebKit.Router.dll
+C:\Dev\libs\dotnet\dotnet-webkit-router\src\JG.WebKit.Router\obj\Debug\net8.0\JG.WebKit.Router.xml
+C:\Dev\libs\dotnet\dotnet-webkit-router\src\JG.WebKit.Router\obj\Debug\net8.0\JG.WebKit.Router.pdb
+C:\Dev\libs\dotnet\dotnet-webkit-router\src\JG.WebKit.Router\obj\Debug\net8.0\ref\JG.WebKit.Router.dll
